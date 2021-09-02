@@ -12,11 +12,17 @@ shinyServer(function(input, output, sesion) {
     #               max = max(dat$Date[dat$Band == input$bird]))
     # })
     
-    output$dateSelect <- renderUI({
-        selectInput("date", "Select date to show:", 
-                    choices = unique(dat$Date[dat$Band == input$bird]),
-                    selected = min(dat$Date[dat$Band == input$bird]))
+    output$birdSelect <- renderUI({
+        selectInput(inputId = 'bird', label = 'Select bird to show:', 
+                    choices = unique(dat$Band[dat$Date == input$date]),
+                    selected = min(dat$Band[dat$Date == input$date]))
     })
+    
+    # output$dateSelect <- renderUI({
+    #     selectInput("date", "Select date to show:", 
+    #                 choices = unique(dat$Date[dat$Band == input$bird]),
+    #                 selected = min(dat$Date[dat$Band == input$bird]))
+    # })
     
     output$timeSelect <- renderUI({
         sliderInput("time", "Select time range:", 
@@ -42,9 +48,20 @@ shinyServer(function(input, output, sesion) {
                           max_time = input$time[2])
     })
     
+    output$lightProfile <- renderPlot({
+        plot_light_profile(data = dat,
+                          bird = input$bird, date = input$date,
+                          min_time = input$time[1], 
+                          max_time = input$time[2])
+    })
+    
     output$locationMap <- renderPlot({
         plot_location(data = locs, bird = input$bird, date = input$date,
                       base = coast)
+    })
+    
+    output$moon_nao <- renderPlot({
+        plot_moon(date = input$date)
     })
     
 })

@@ -10,15 +10,26 @@ shinyUI(fluidPage(
     sidebarLayout(
         sidebarPanel(
             #h6('Select bird to plot'),
-            selectInput(inputId = 'bird', label = 'Select bird to show:', choices = unique(dat$Band), 
-                        selected = '118600758', multiple = FALSE
+            
+            selectInput("date", "Select date to show:",  choices = unique(dat$Date), 
+                        selected = '2018-01-01', multiple = FALSE
             ),
             
-            #h6('Select date to plot'),
-            uiOutput('dateSelect'),
+            # selectInput(inputId = 'bird', label = 'Select bird to show:', choices = unique(dat$Band), 
+            #             selected = '118600758', multiple = FALSE
+            # ),
             
-            #h6('Use the time slider to zoom into a dive bout')
-            uiOutput('timeSelect')
+            uiOutput('birdSelect'),
+            
+            #h6('Select date to plot'),
+            # uiOutput('dateSelect'),
+            
+            h6('Use the time slider to zoom into  dive bouts'),
+            uiOutput('timeSelect'),
+            
+            h4('Environmental conditions'),
+            
+            plotOutput('moon_nao')
         ),
 
         mainPanel(
@@ -30,7 +41,7 @@ shinyUI(fluidPage(
             fluidRow(
                 splitLayout(cellWidths = c("50%", "50%"), 
                             plotOutput('diveProfile'),
-                            NULL)
+                            plotOutput('lightProfile'))
             )
             # plotOutput('diveProfile')
         )

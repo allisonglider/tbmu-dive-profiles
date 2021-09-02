@@ -13,7 +13,7 @@ theme_update(
 coast <- readRDS('coast.RDS')
 dat <- readRDS('tdr_combined_small.RDS')
 locs <- readRDS('gls_locations.RDS')
-
+moon_nao <- readRDS('moon_nao.RDS')
 
 # -----
 
@@ -43,8 +43,9 @@ plot_daily_dives <- function(data, bird, date, min_time, max_time) {
     geom_tile(data = myGrid, aes(x = Time, y = Depth, fill = Light_prop), alpha = 0.7) +
     geom_line() +
     geom_vline(xintercept = c(min_time,max_time), linetype = 2) +
-    scale_y_continuous(trans = 'reverse', expand = c(0,0), lim = c(200, -10)) +
+    scale_y_continuous(trans = 'reverse', expand = c(0,0)) +
     scale_x_datetime(expand = c(0,0), date_labels = "%H:%M") +
+    coord_cartesian(xlim = c(min_time,max_time), ylim = c(200, -10)) +
     scale_fill_viridis_c(begin = 0.2, end = 1, option = 'cividis', direction = -1) +
     labs(x = 'Time (UTC)', y = 'Depth(m)',
          title = paste('Dive activity of', bird, 'on', date),
@@ -74,7 +75,34 @@ plot_dive_profile <- function(data = dat, lag_time = 4,
     scale_x_continuous(trans = 'reverse') +
     scale_y_continuous(lim = c(min(tt$Temp_cor) - 1, max(tt$Temp_cor) + 1)) +
     labs(y = 'Temperature (\u00B0C)', x = 'Depth (m)',
-         title = paste('Temperature depth profile'),
+         title = paste('Temperature profile'),
+         subtitle = 'Grey lines are individual dives, blue line is mean profile estimated with a GAM')
+  
+  p
+}
+
+plot_light_profile <- function(data = dat, bird = '118600758', date = as.Date('2018-01-01'),
+                              min_time = as.POSIXct('2018-01-01 00:30:00', tz = 'UTC'), 
+                              max_time = as.POSIXct('2018-01-01 23:30:00', tz = 'UTC')) {
+  
+  tt <- data %>%
+    filter(Band == bird, Date == date) %>% 
+    filter(Time >= min_time, Time <= max_time) %>% 
+    # mutate(
+    #   Temp_cor = get_correct_temp(T0 = lag(Temp, 1), T1 = Temp , s = 10, bs = lag_time)
+    # ) %>%
+    filter(In_bout == 1) %>%
+    select(Band, Time, Light, Temp, Depth)
+  
+  p <- ggplot(tt, aes(y = Light, x = Depth)) +
+    geom_path(col = grey(0.5), alpha = 0.5, size = 0.5) +
+    geom_smooth(se = F, method = 'gam') +
+    geom_vline(xintercept = 0) +
+    coord_flip() +
+    scale_x_continuous(trans = 'reverse') +
+    scale_y_continuous(lim = c(0,350)) +
+    labs(y = 'Light', x = 'Depth (m)',
+         title = paste('Light profile'),
          subtitle = 'Grey lines are individual dives, blue line is mean profile estimated with a GAM')
   
   p
@@ -97,4 +125,23 @@ plot_location <- function(data = locs, bird,
          title = paste('GLS estimated track for', bird),
          subtitle = paste0('Blue point shows the location on ', date, ', red square is colony'))
   
+}
+
+plot_moon <- function(date) {
+  yy <- strftime(date,'%Y')
+  
+  temp <- subset(moon_nao, moon_nao$Year == yy)
+  
+  moon <- ggplot(temp, aes(x = Date, y = Moon)) +
+    geom_line() +
+    geom_point(data = temp[temp$Date == date,], aes(x = Date, y = Moon), size = 3) +
+    labs(x = 'Date', y = 'Moon illumination')
+  
+  nao <- ggplot(temp, aes(x = Date, y = NAO)) +
+    geom_line() +
+    geom_point(data = temp[temp$Date == date,], aes(x = Date, y = NAO), size = 3) +
+    scale_y_continuous(lim = c(-2,2)) +
+    labs(x = 'Date', y = 'NAO')
+  
+  cowplot::plot_grid(moon, nao, nrow = 2)
 }

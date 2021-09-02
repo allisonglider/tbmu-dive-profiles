@@ -3,10 +3,24 @@ library(ggplot2)
 library(rnaturalearth)
 library(sf)
 
-coast <- rnaturalearth::ne_countries(, scale = 50, returnclass = 'sf')
-coast <- st_crop(coast, xmin = -95, ymin = 43, xmax = -30, ymax = 68)
+coast <- rnaturalearth::ne_countries( scale = 50, returnclass = 'sf')
+coast <- st_crop(coast, xmin = -95, ymin = 43, xmax = -30, ymax = 72)
 plot(st_geometry(coast))
 saveRDS(coast, 'coast.RDS')
+
+
+# -----
+moon_nao <- data.frame(
+  Date = c(seq.Date(as.Date("2018-01-01"), by =1, length.out = 90),
+           seq.Date(as.Date("2019-01-01"), by =1, length.out = 90)),
+  Year = rep(c('2018','2019'), each = 90),
+  Moon = NA
+  )
+
+moon_nao$Moon <- suncalc::getMoonIllumination(moon_nao$Date)$fraction
+nao <- readRDS('D:/TBMU-Winter-Behaviour/data/nao.RDS')
+saveRDS(merge(moon_nao, nao), 'moon_nao.RDS')
+
 
 get_correct_temp <- function(T0, T1, s, bs) {
   T0 - ((T0 - T1)/(1 - exp(-bs/s)))
@@ -14,12 +28,14 @@ get_correct_temp <- function(T0, T1, s, bs) {
 
 theme_set(theme_light())
 
-the_files <- list.files('E:/TBMU-COE-Moult/data/classified', full.names = T)[c(1:20)]
+the_files <- list.files('E:/TBMU-COE-Moult/data/classified', full.names = T)[c(1:24,26:30)]
 
 dat <- data.frame()
 for (i in 1:length(the_files)) {
   temp <- readRDS(the_files[i]) %>% 
-    filter(Mon %in% c(9:12,1:5), DOY %in% c(244,274,305,335,1,32,60,91,121)) 
+    # filter(Mon %in% c(9:12,1:5), DOY %in% c(244,274,305,335,1,32,60,91,121)) 
+  filter(Mon %in% c(1:3), DOY %in% c(1,6,11,16,21,26,32,37,42,47,52,57,60,65,70,75,80,85)) 
+  
   dat <- rbind(dat, temp)
 }
 
