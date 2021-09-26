@@ -82,8 +82,8 @@ plot_dive_profile <- function(data = dat, lag_time = 4,
 }
 
 plot_light_profile <- function(data = dat, bird = '118600758', date = as.Date('2018-01-01'),
-                              min_time = as.POSIXct('2018-01-01 00:30:00', tz = 'UTC'), 
-                              max_time = as.POSIXct('2018-01-01 23:30:00', tz = 'UTC')) {
+                               min_time = as.POSIXct('2018-01-01 00:30:00', tz = 'UTC'), 
+                               max_time = as.POSIXct('2018-01-01 23:30:00', tz = 'UTC')) {
   
   tt <- data %>%
     filter(Band == bird, Date == date) %>% 
@@ -103,7 +103,7 @@ plot_light_profile <- function(data = dat, bird = '118600758', date = as.Date('2
     scale_y_continuous(lim = c(0,350)) +
     labs(y = 'Light', x = 'Depth (m)',
          title = paste('Light profile'),
-         subtitle = 'Grey lines are individual dives, blue line is mean profile estimated with a GAM')
+         subtitle = 'Grey lines are individual dives, blue line is mean profile')
   
   p
 }
@@ -144,4 +144,46 @@ plot_moon <- function(date) {
     labs(x = 'Date', y = 'NAO')
   
   cowplot::plot_grid(moon, nao, nrow = 2)
+}
+
+
+# -----
+
+plot_temp_raster <- function(data = dat, bird = '99670779', date = as.Date('2018-03-17'),
+                             min_time = as.POSIXct('2018-03-17 00:30:00', tz = 'UTC'), 
+                             max_time = as.POSIXct('2018-03-17 23:30:00', tz = 'UTC')) {
+  
+  tt <- data %>%
+    filter(Band == bird, Date == date, Behaviour == 'Diving') %>% 
+    filter(Time >= min_time, Time <= max_time) %>% 
+    mutate(
+      Depth_class = (floor(Depth/5) * 5) - 2.5
+    ) %>% group_by(Depth_class) %>% 
+    summarise(
+      Dur = (n() * 10)/(60),
+      Temp = mean(Temp)
+    ) 
+  
+  temp_diff <- max(tt$Temp) - min(tt$Temp)
+  if (temp_diff > 3) {
+    temp_min <- floor(min(tt$Temp))
+    temp_max <- ceiling(max(tt$Temp))
+  } else {
+    temp_min <- (min(tt$Temp) + temp_diff/2) - 1.5
+    temp_max <- (min(tt$Temp) + temp_diff/2) + 1.5
+  }
+  
+  ggplot(tt, aes(y = Dur, x = Depth_class, fill = Temp)) +
+    geom_bar(stat = 'identity', width = 5) +
+    scale_x_reverse() +
+    coord_flip() +
+    scale_fill_viridis_c(option = 'B', lim = c(temp_min, temp_max)) +
+    labs(title = 'Time spent in each 5 m depth class',
+         subtitle = 'Bar colour indicates mean water temperature',
+         y = 'Time (min)', x = 'Depth (m)',
+         fill = 'Temp (\u00B0C)') +
+    theme(
+      legend.background = element_blank()
+    )
+  
 }

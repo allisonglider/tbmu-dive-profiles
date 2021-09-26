@@ -48,8 +48,8 @@ shinyServer(function(input, output, sesion) {
                           max_time = input$time[2])
     })
     
-    output$lightProfile <- renderPlot({
-        plot_light_profile(data = dat,
+    output$tempProfile <- renderPlot({
+        plot_temp_raster(data = dat,
                           bird = input$bird, date = input$date,
                           min_time = input$time[1], 
                           max_time = input$time[2])

@@ -9,7 +9,8 @@ shinyUI(fluidPage(
     # Sidebar with a slider input for number of bins
     sidebarLayout(
         sidebarPanel(
-            #h6('Select bird to plot'),
+            h6('Use this app to explore the dive behaviour of thick-billed murres originating 
+               from a colony at Coats Island, Nunavut, through winter of 2018 and 2019.'),
             
             selectInput("date", "Select date to show:",  choices = unique(dat$Date), 
                         selected = '2018-01-01', multiple = FALSE
@@ -24,12 +25,17 @@ shinyUI(fluidPage(
             #h6('Select date to plot'),
             # uiOutput('dateSelect'),
             
-            h6('Use the time slider to zoom into  dive bouts'),
+            h6('Use the slider to zoom in to a particular time range'),
             uiOutput('timeSelect'),
             
             h4('Environmental conditions'),
             
-            plotOutput('moon_nao')
+            plotOutput('moon_nao'),
+            
+            h6(''),
+            
+            h6('\n Created by Allison Patterson @allisonglider'),
+            
         ),
 
         mainPanel(
@@ -41,7 +47,7 @@ shinyUI(fluidPage(
             fluidRow(
                 splitLayout(cellWidths = c("50%", "50%"), 
                             plotOutput('diveProfile'),
-                            plotOutput('lightProfile'))
+                            plotOutput('tempProfile'))
             )
             # plotOutput('diveProfile')
         )
