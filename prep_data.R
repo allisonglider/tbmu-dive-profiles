@@ -28,14 +28,14 @@ get_correct_temp <- function(T0, T1, s, bs) {
 
 theme_set(theme_light())
 
-the_files <- list.files('D:/TBMU-COE-Moult/data/classified', full.names = T)[c(1:24,26:30)]
+the_files <- list.files('D:/TBMU-COE-Moult/data/classified', full.names = T)[c(1:24,26:40)]
 
 dat <- data.frame()
 for (i in 1:length(the_files)) {
   print(i)
   temp <- readRDS(the_files[i]) %>% 
     # filter(Mon %in% c(9:12,1:5), DOY %in% c(244,274,305,335,1,32,60,91,121)) 
-  filter(Mon %in% c(1:3), DOY %in% seq(1, 365, 5)) 
+  filter(Mon %in% c(1:3), DOY %in% seq(1, 365, 5), Date < as.Date('2018-12-31', tz = 'UTC')) 
   
   dat <- rbind(dat, temp)
 }

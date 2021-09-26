@@ -12,18 +12,18 @@ shinyUI(fluidPage(
             h6('Use this app to explore the dive behaviour of thick-billed murres originating 
                from a colony at Coats Island, Nunavut, through winter of 2018 and 2019.'),
             
-            selectInput("date", "Select date to show:",  choices = unique(dat$Date), 
-                        selected = '2018-01-01', multiple = FALSE
-            ),
-            
-            # selectInput(inputId = 'bird', label = 'Select bird to show:', choices = unique(dat$Band), 
-            #             selected = '118600758', multiple = FALSE
+            # selectInput("date", "Select date to show:",  choices = unique(dat$Date), 
+            #             selected = '2018-01-01', multiple = FALSE
             # ),
             
-            uiOutput('birdSelect'),
+            selectInput(inputId = 'bird', label = 'Select bird to show:', choices = unique(dat$Band),
+                        selected = '118600758', multiple = FALSE
+            ),
+            
+            # uiOutput('birdSelect'),
             
             #h6('Select date to plot'),
-            # uiOutput('dateSelect'),
+            uiOutput('dateSelect'),
             
             h6('Use the slider to zoom in to a particular time range'),
             uiOutput('timeSelect'),
