@@ -11,8 +11,8 @@ theme_update(
 )
 
 coast <- readRDS('coast.RDS')
-dat <- readRDS('tdr_combined_small.RDS')
-locs <- readRDS('gls_locations.RDS')
+dat <- readRDS('tdr_example.RDS')
+locs <- readRDS('locations_example.RDS')
 moon_nao <- readRDS('moon_nao.RDS')
 
 # -----
