@@ -9,8 +9,8 @@ shinyUI(fluidPage(
     # Sidebar with a slider input for number of bins
     sidebarLayout(
         sidebarPanel(
-            h6('Use this app to explore the dive behaviour of thick-billed murres originating 
-               from a colony at Coats Island, Nunavut, through winter of 2018 and 2019.'),
+            h6('This app explores the dive behaviour of thick-billed murres originating 
+               from a colony at Coats Island, Nunavut, during the winter of 2018.'),
             
             # selectInput("date", "Select date to show:",  choices = unique(dat$Date), 
             #             selected = '2018-01-01', multiple = FALSE

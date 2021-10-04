@@ -187,3 +187,5 @@ plot_temp_raster <- function(data = dat, bird = '99670779', date = as.Date('2018
     )
   
 }
+
+
