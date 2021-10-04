@@ -82,4 +82,16 @@ saveRDS(locs, 'gls_locations.RDS')
 
 # -----
 
+dat <- readRDS('tdr_combined_small.RDS')
+locs <- readRDS('gls_locations.RDS')
+
+bb <- unique(dat$Band)[1:2]
+dd <- unique(dat$Date)[1:3]
+
+dat_example <- subset(dat, dat$Band %in% bb & dat$Date %in% dd)
+locs_example <- subset(locs, dat$Band %in% bb)
+
+saveRDS(dat_example,'tdr_example.RDS')
+saveRDS(locs_example, 'locations_example.RDS')
+
 
